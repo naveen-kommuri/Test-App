@@ -45,6 +45,8 @@ public class CustomCameraActivity extends Activity {
             camera.enableShutterSound(true);
             camera.setDisplayOrientation(90);
             Camera.Parameters parameters = camera.getParameters();
+//            parameters.setJpegQuality(100);
+//            parameters.setPictureSize(720, 1280);
             parameters.setRotation(90);
             camera.setParameters(parameters);
             mPreview = new CameraPreview(this, camera);

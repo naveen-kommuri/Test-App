@@ -20,13 +20,21 @@ import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -34,15 +42,22 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
+import com.test.testapplication.Utils.MyGridView;
 
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.net.URI;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import static com.test.testapplication.CustomCameraActivity.IMAGE_DIRECTORY_NAME;
 
@@ -51,11 +66,37 @@ public class GalleryActivity extends AppCompatActivity {
     private CustomAdapter customAdapter;
     String[] supportedTypes = new String[]{"JPG", "JPEG", "PNG"};
     ArrayList<FileItem> fileItems;
+    Map<String, ArrayList<FileItem>> fileItemsMap;
+    private static int TYPE_GRID = 1;
+    private static int TYPE_LIST = 2;
+    EditText et_search;
 
     @Override
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery);
+        et_search = findViewById(R.id.et_search);
+        et_search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                String searchStr = editable.toString();
+                Toast.makeText(GalleryActivity.this, "...." + searchStr, Toast.LENGTH_SHORT).show();
+                if (customAdapter != null) {
+                    customAdapter.getFilter().filter(searchStr);
+                }
+            }
+        });
         loadPermissions();
     }
 
@@ -77,17 +118,52 @@ public class GalleryActivity extends AppCompatActivity {
             tv_no_captures.setVisibility(View.VISIBLE);
             recyclerView.setVisibility(View.GONE);
         } else {
-            recyclerView.setLayoutManager(gridLayoutManager);
-            customAdapter = new CustomAdapter(fileItems);
-            recyclerView.setAdapter(customAdapter);
+            loadIntoMap(fileItems);
+            recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+//            recyclerView.setLayoutManager(gridLayoutManager);
+            recyclerView.setAdapter(new CustomAdapter(fileItemsMap, TYPE_GRID));
         }
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(GalleryActivity.this, CustomCameraActivity.class));
+                customAdapter = new CustomAdapter(fileItems, TYPE_LIST);
+                recyclerView.setAdapter(customAdapter);
+//                startActivity(new Intent(GalleryActivity.this, CustomCameraActivity.class));
             }
         });
+        fab.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                Toast.makeText(GalleryActivity.this, "Long Click", Toast.LENGTH_SHORT).show();
+                recyclerView.setAdapter(new CustomAdapter(fileItemsMap, TYPE_GRID));
+                return true;
+            }
+        });
+    }
+
+    private void loadIntoMap(ArrayList<FileItem> fileItems) {
+        fileItemsMap = new LinkedHashMap<>();
+        for (FileItem item : fileItems) {
+            String key = getDate(item.getFile().lastModified());
+            ArrayList<FileItem> fileItems1;
+            if (fileItemsMap.containsKey(key)) {
+                fileItems1 = fileItemsMap.get(key);
+            } else {
+                fileItems1 = new ArrayList<>();
+            }
+            fileItems1.add(item);
+            fileItemsMap.put(key, fileItems1);
+        }
+    }
+
+    private String getDate(long modified) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM yy");
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(modified);
+        String format = simpleDateFormat.format(calendar.getTime());
+        Log.e("Converted Date", format);
+        return format;
     }
 
     boolean isStoragePermission(Context context) {
@@ -127,53 +203,130 @@ public class GalleryActivity extends AppCompatActivity {
         }
     }
 
-    class CustomAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    class CustomAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Filterable {
         ArrayList<FileItem> fileItems;
+        Map<String, ArrayList<FileItem>> fileItemsList;
+        int listType;
 
-        public CustomAdapter(ArrayList<FileItem> fileItems) {
+        public CustomAdapter(ArrayList<FileItem> fileItems, int listType) {
             this.fileItems = fileItems;
+            this.listType = listType;
+        }
+
+        public CustomAdapter(Map<String, ArrayList<FileItem>> fileItemsList, int listType) {
+            this.fileItemsList = fileItemsList;
+            this.listType = listType;
+        }
+
+        @Override
+        public Filter getFilter() {
+            return new SearchFilter();
+        }
+
+        public class SearchFilter extends Filter {
+
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                FilterResults filterResults = new FilterResults();
+
+                if (constraint == null || constraint.length() == 0) {
+                    // No filter implemented we return all the list
+                    filterResults.values = fileItems;
+                    filterResults.count = fileItems.size();
+                } else {
+                    List<FileItem> filteredList = new ArrayList<>();
+                    for (int i = 0; i < fileItems.size(); i++) {
+                        FileItem fileItem = fileItems.get(i);
+                        if (fileItem.getFile().getName().toUpperCase().contains(constraint.toString().toUpperCase())) {
+                            filteredList.add(fileItem);
+                        }
+                    }
+                    filterResults.values = filteredList;
+                    filterResults.count = filteredList.size();
+                }
+                return filterResults;
+            }
+
+            @SuppressWarnings("unchecked")
+            @Override
+            protected void publishResults(CharSequence constraint,
+                                          FilterResults results) {
+                fileItems = (ArrayList<FileItem>) results.values;
+                notifyDataSetChanged();
+            }
         }
 
 
-        class MyViewHolder extends RecyclerView.ViewHolder {
+        class ListViewHolder extends RecyclerView.ViewHolder {
 
             private ImageView iv_thumbnail;
+            TextView tv_date, tv_name, tv_size;
 
-            public MyViewHolder(View view) {
+            public ListViewHolder(View view) {
                 super(view);
-                iv_thumbnail = (ImageView) view.findViewById(R.id.iv_item);
+                iv_thumbnail = view.findViewById(R.id.imageView);
+                tv_name = view.findViewById(R.id.tv_name);
+                tv_date = view.findViewById(R.id.tv_date);
+                tv_size = view.findViewById(R.id.tv_size);
+            }
+        }
+
+        class GridViewHolder extends RecyclerView.ViewHolder {
+            TextView titleView;
+            MyGridView gridView;
+
+            public GridViewHolder(View itemView) {
+                super(itemView);
+                titleView = itemView.findViewById(R.id.tv_title);
+                gridView = itemView.findViewById(R.id.grid_items);
             }
         }
 
         @Override
-        public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View itemView = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_gallery, parent, false);
-            return new MyViewHolder(itemView);
+        public int getItemViewType(int position) {
+            return this.listType;
+        }
+
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            if (viewType == TYPE_GRID) {
+                View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_grid_gallery, parent, false);
+                return new GridViewHolder(itemView);
+            } else {
+                View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_gallery, parent, false);
+                return new ListViewHolder(itemView);
+            }
         }
 
         @Override
         public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
-            final MyViewHolder holder1 = (MyViewHolder) holder;
-
-//            holder1.iv_thumbnail.setImageURI(Uri.fromFile(fileItems.get(position).getFile()));
-
-            Glide.with(GalleryActivity.this).
-                    load(Uri.fromFile(fileItems.get(position).getFile())).asBitmap()
-                    .placeholder(R.drawable.nodocument)
-                    .centerCrop()
-                    .into(new BitmapImageViewTarget(holder1.iv_thumbnail) {
-                        @Override
-                        protected void setResource(Bitmap resource) {
-                            holder1.iv_thumbnail.setImageBitmap(resource);
-//                            mIvProfile.setImageBitmap(resource);
-                        }
-                    });
+            if (holder instanceof GridViewHolder) {
+                final GridViewHolder holder1 = (GridViewHolder) holder;
+                String key = fileItemsList.keySet().toArray()[position] + "";
+                holder1.titleView.setText(key);
+                ArrayList<FileItem> _fileItems = fileItemsList.get(key);
+                holder1.gridView.setAdapter(new CustomGridAdapter(_fileItems, GalleryActivity.this));
+            } else if (holder instanceof ListViewHolder) {
+                final ListViewHolder listViewHolder = (ListViewHolder) holder;
+                listViewHolder.tv_name.setText(fileItems.get(position).getFile().getName());
+                listViewHolder.tv_date.setText(getDate(fileItems.get(position).getFile().lastModified()));
+                listViewHolder.tv_size.setText(fileItems.get(position).getFile().length() + " Bytes");
+                Glide.with(GalleryActivity.this).
+                        load(Uri.fromFile(fileItems.get(position).getFile())).asBitmap()
+                        .placeholder(R.drawable.nodocument)
+                        .centerCrop()
+                        .into(new BitmapImageViewTarget(listViewHolder.iv_thumbnail) {
+                            @Override
+                            protected void setResource(Bitmap resource) {
+                                listViewHolder.iv_thumbnail.setImageBitmap(resource);
+                            }
+                        });
+            }
         }
 
         @Override
         public int getItemCount() {
-            return fileItems.size();
+            return this.listType == TYPE_GRID ? fileItemsMap.size() : fileItems.size();
         }
     }
 

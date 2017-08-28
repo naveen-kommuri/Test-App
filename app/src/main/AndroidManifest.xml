@@ -17,7 +17,7 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".LoginActivity"
+            android:name=".GalleryActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,8 +26,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".GalleryActivity"
-            android:screenOrientation="portrait" />
+            android:name=".CustomCameraActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".PreviewActivity"
             android:screenOrientation="portrait" />
@@ -35,9 +36,11 @@
         <service android:name=".MainActivity$DownloadingService" />
 
         <activity
-            android:name=".CustomCameraActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:name=".LoginActivity"
+            android:screenOrientation="portrait" />
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
     </application>
 
 </manifest>

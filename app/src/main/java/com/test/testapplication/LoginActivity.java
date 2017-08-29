@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.test.testapplication.Utils.DbHelper;
+import com.test.testapplication.home.Main2Activity;
 import com.test.testapplication.model.User;
 
 public class LoginActivity extends AppCompatActivity {
@@ -87,7 +88,8 @@ public class LoginActivity extends AppCompatActivity {
                     DbHelper dbHelper = new DbHelper(getActivity());
                     if (dbHelper.isValidUser(new User(et_email.getText().toString(), et_password.getText().toString()))) {
                         Toast.makeText(getActivity(), "Valid Login", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(getActivity(), GalleryActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                        getActivity().finish();
+                        startActivity(new Intent(getActivity(), Main2Activity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                     } else
                         Toast.makeText(getActivity(), "Please Enter Valid Credentials", Toast.LENGTH_SHORT).show();
                 }
@@ -127,7 +129,8 @@ public class LoginActivity extends AppCompatActivity {
                             , et_reg_type.getText().toString(), et_pin_code.getText().toString());
                     DbHelper dbHelper = new DbHelper(getActivity());
                     if (validUser(user, et_confirm_password.getText().toString()) && dbHelper.insertUsers(user)) {
-                        startActivity(new Intent(getActivity(), GalleryActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                        getActivity().finish();
+                        startActivity(new Intent(getActivity(), Main2Activity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                         Toast.makeText(getActivity(), "Registered Successfully", Toast.LENGTH_SHORT).show();
                     } else
                         Toast.makeText(getActivity(), "Something Went wrong", Toast.LENGTH_SHORT).show();

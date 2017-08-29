@@ -12,10 +12,13 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.app.AppCompatActivity;
@@ -25,6 +28,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -61,47 +65,68 @@ import java.util.Map;
 
 import static com.test.testapplication.CustomCameraActivity.IMAGE_DIRECTORY_NAME;
 
-public class GalleryActivity extends AppCompatActivity {
+public class GalleryActivity extends Fragment {
+    //public class GalleryActivity extends FragmentActivity {
     RecyclerView recyclerView;
     private CustomAdapter customAdapter;
     String[] supportedTypes = new String[]{"JPG", "JPEG", "PNG"};
     ArrayList<FileItem> fileItems;
     Map<String, ArrayList<FileItem>> fileItemsMap;
-    private static int TYPE_GRID = 1;
-    private static int TYPE_LIST = 2;
+    public static int TYPE_GRID = 1;
+    public static int TYPE_LIST = 2;
     EditText et_search;
+    int listType;
+    View view;
+
+    public GalleryActivity() {
+
+    }
+
+    public static GalleryActivity newInstance(int listType) {
+        GalleryActivity fragment = new GalleryActivity();
+        Bundle args = new Bundle();
+        args.putInt("listType", listType);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
 
     @Override
-
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_gallery);
-        et_search = findViewById(R.id.et_search);
-        et_search.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                String searchStr = editable.toString();
-                Toast.makeText(GalleryActivity.this, "...." + searchStr, Toast.LENGTH_SHORT).show();
-                if (customAdapter != null) {
-                    customAdapter.getFilter().filter(searchStr);
-                }
-            }
-        });
+//    protected void onCreate(Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//        setContentView(R.layout.activity_gallery);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.activity_gallery, container, false);
+        if (getArguments() != null) {
+            listType = getArguments().getInt("listType");
+        }
+        et_search = view.findViewById(R.id.et_search);
+//        et_search.addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//
+//            }
+//
+//            @Override
+//            public void afterTextChanged(Editable editable) {
+//                String searchStr = editable.toString();
+//                Toast.makeText(getActivity(), "...." + searchStr, Toast.LENGTH_SHORT).show();
+//                if (customAdapter != null) {
+//                    customAdapter.getFilter().filter(searchStr);
+//                }
+//            }
+//        });
         loadPermissions();
+        return view;
     }
 
     private void loadPermissions() {
-        if (isStoragePermission(GalleryActivity.this)) {
+        if (isStoragePermission(getActivity())) {
             openGallery();
         } else {
             requestStoragePermission(100);
@@ -109,9 +134,9 @@ public class GalleryActivity extends AppCompatActivity {
     }
 
     private void openGallery() {
-        recyclerView = findViewById(R.id.recyclerView);
-        TextView tv_no_captures = findViewById(R.id.tv_no_capture);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
+        recyclerView = view.findViewById(R.id.recyclerView);
+        TextView tv_no_captures = view.findViewById(R.id.tv_no_capture);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 2);
         fileItems = new ArrayList<>();
         getFiles(new File(Environment.getExternalStorageDirectory(), IMAGE_DIRECTORY_NAME).getAbsolutePath());
         if (fileItems.size() == 0) {
@@ -119,23 +144,28 @@ public class GalleryActivity extends AppCompatActivity {
             recyclerView.setVisibility(View.GONE);
         } else {
             loadIntoMap(fileItems);
-            recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 //            recyclerView.setLayoutManager(gridLayoutManager);
-            recyclerView.setAdapter(new CustomAdapter(fileItemsMap, TYPE_GRID));
+            if (listType == TYPE_GRID)
+                recyclerView.setAdapter(new CustomAdapter(fileItemsMap, TYPE_GRID));
+            else {
+                customAdapter = new CustomAdapter(fileItems, TYPE_LIST);
+                recyclerView.setAdapter(customAdapter);
+            }
         }
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                customAdapter = new CustomAdapter(fileItems, TYPE_LIST);
-                recyclerView.setAdapter(customAdapter);
-//                startActivity(new Intent(GalleryActivity.this, CustomCameraActivity.class));
+//                customAdapter = new CustomAdapter(fileItems, TYPE_LIST);
+//                recyclerView.setAdapter(customAdapter);
+                startActivity(new Intent(getActivity(), CustomCameraActivity.class));
             }
         });
         fab.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                Toast.makeText(GalleryActivity.this, "Long Click", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "Long Click", Toast.LENGTH_SHORT).show();
                 recyclerView.setAdapter(new CustomAdapter(fileItemsMap, TYPE_GRID));
                 return true;
             }
@@ -175,7 +205,7 @@ public class GalleryActivity extends AppCompatActivity {
 
 
     private void requestStoragePermission(int permissionType) {
-        ActivityCompat.requestPermissions(GalleryActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA}, permissionType);
+        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA}, permissionType);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
@@ -192,7 +222,7 @@ public class GalleryActivity extends AppCompatActivity {
         if (isGranted) {
             openGallery();
         } else {
-            new AlertDialog.Builder(GalleryActivity.this).setMessage("Permissions Required").setNeutralButton("Retry", new DialogInterface.OnClickListener() {
+            new AlertDialog.Builder(getActivity()).setMessage("Permissions Required").setNeutralButton("Retry", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     dialogInterface.dismiss();
@@ -305,13 +335,13 @@ public class GalleryActivity extends AppCompatActivity {
                 String key = fileItemsList.keySet().toArray()[position] + "";
                 holder1.titleView.setText(key);
                 ArrayList<FileItem> _fileItems = fileItemsList.get(key);
-                holder1.gridView.setAdapter(new CustomGridAdapter(_fileItems, GalleryActivity.this));
+                holder1.gridView.setAdapter(new CustomGridAdapter(_fileItems, getActivity()));
             } else if (holder instanceof ListViewHolder) {
                 final ListViewHolder listViewHolder = (ListViewHolder) holder;
                 listViewHolder.tv_name.setText(fileItems.get(position).getFile().getName());
                 listViewHolder.tv_date.setText(getDate(fileItems.get(position).getFile().lastModified()));
                 listViewHolder.tv_size.setText(fileItems.get(position).getFile().length() + " Bytes");
-                Glide.with(GalleryActivity.this).
+                Glide.with(getActivity()).
                         load(Uri.fromFile(fileItems.get(position).getFile())).asBitmap()
                         .placeholder(R.drawable.nodocument)
                         .centerCrop()

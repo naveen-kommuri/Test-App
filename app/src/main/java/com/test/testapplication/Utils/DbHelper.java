@@ -10,6 +10,8 @@ import com.test.testapplication.model.Invoice;
 import com.test.testapplication.model.Status;
 import com.test.testapplication.model.User;
 
+import java.util.ArrayList;
+
 /**
  * Created by Naveen on 8/19/2017.
  */
@@ -40,7 +42,7 @@ public class DbHelper extends SQLiteOpenHelper {
                 "FULLNAME TEXT NOT NULL,EMAILID TEXT NOT NULL,CONTACTNO TEXT NOT NULL,PASSWORD TEXT NOT NULL,PAN TEXT NOT NULL,GSTIN TEXT NOT NULL," +
                 "GSTINREGDATE TEXT NOT NULL,REGTYPE TEXT NOT NULL,PINCODE TEXT NOT NULL);");
         sqLiteDatabase.execSQL("Create table " + INVOICES_TB + " (ID INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "MERCHANTNAME TEXT NOT NULL,INVOICENO TEXT NOT NULL,INVOICEAMOUNT TEXT NOT NULL,INVOICEGSTIN TEXT NOT NULL,INVOICEDATE TEXT NOT NULL,INVOICELOC TEXT NOT NULL,STATUS TEXT NOT NULL);");
+                "MERCHANTNAME TEXT NOT NULL,INVOICENO TEXT NOT NULL,INVOICEAMOUNT TEXT NOT NULL,INVOICEGSTIN TEXT NOT NULL,INVOICEDATE TEXT NOT NULL,INVOICELOC TEXT NOT NULL,STATUS TEXT NOT NULL,UPDATEDTIME TEXT NOT NULL);");
         sqLiteDatabase.execSQL("Create table " + INVOICE_TRANS_TB + " (ID INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "INVOICEID INTEGER NOT NULL,STATUS TEXT NOT NULL,UPDATEDTIME TEXT NOT NULL);");
     }
@@ -82,6 +84,7 @@ public class DbHelper extends SQLiteOpenHelper {
         values.put("INVOICEGSTIN", invoice.getInvoiceGSTIn());
         values.put("INVOICENO", invoice.getInvoiceNo());
         values.put("STATUS", Status.REGISTERED.toString());
+        values.put("UPDATEDTIME", CommonUtil.getCurrentTime() + "");
         long rowId = db.insert(INVOICES_TB, null, values);
         return rowId != -1 ? insertTransaction(rowId, Status.REGISTERED) : false;
     }
@@ -94,6 +97,21 @@ public class DbHelper extends SQLiteOpenHelper {
         values.put("UPDATEDTIME", CommonUtil.getCurrentTime() + "");
         long rowId = db.insert(INVOICE_TRANS_TB, null, values);
         return rowId != -1;
+    }
+
+
+    public ArrayList<Invoice> getInvoices(String searchStr) {
+        SQLiteDatabase db = getWritableDatabase();
+//        Cursor cursor = db.rawQuery("select i.* from " + INVOICES_TB + "i INNER JOIN " + INVOICE_TRANS_TB + "it  ON i.ID=it.INVOICEID", null);
+        String appendQuery = (searchStr == null || searchStr.trim().length() == 0 ? "" : " where MERCHANTNAME like '%" + searchStr + "%'");
+        Cursor cursor = db.rawQuery("select * from " + INVOICES_TB + appendQuery, null);
+        ArrayList<Invoice> invoices = new ArrayList<>();
+        while (cursor.moveToNext()) {
+            invoices.add(new Invoice(cursor.getString(cursor.getColumnIndex("INVOICEAMOUNT")), cursor.getString(cursor.getColumnIndex("INVOICENO")), cursor.getString(cursor.getColumnIndex("INVOICEGSTIN"))
+                    , cursor.getString(cursor.getColumnIndex("INVOICEDATE")), cursor.getString(cursor.getColumnIndex("MERCHANTNAME")), cursor.getString(cursor.getColumnIndex("INVOICELOC")))
+                    .setInvoiceId(cursor.getInt(cursor.getColumnIndex("ID"))).setInvoiceStatus(cursor.getString(cursor.getColumnIndex("STATUS"))).setUpdatedTime(cursor.getString(cursor.getColumnIndex("UPDATEDTIME"))));
+        }
+        return invoices;
     }
 
 

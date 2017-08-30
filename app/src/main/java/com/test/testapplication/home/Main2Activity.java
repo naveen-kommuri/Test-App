@@ -16,10 +16,12 @@ import android.widget.TextView;
 
 //import com.larvalabs.svgandroid.SVG;
 //import com.larvalabs.svgandroid.SVGParser;
+import com.test.testapplication.CreateInvoiceActivity;
 import com.test.testapplication.CustomCameraActivity;
 import com.test.testapplication.GalleryActivity;
 import com.test.testapplication.GalleryFragment;
 import com.test.testapplication.R;
+import com.test.testapplication.SearchFragment;
 //import com.wnafee.vector.compat.VectorDrawable;
 
 import static com.test.testapplication.GalleryActivity.TYPE_GRID;
@@ -29,25 +31,24 @@ public class Main2Activity extends AppCompatActivity {
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
-
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
             switch (item.getItemId()) {
-                case R.id.navigation_home:
-                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                    fragmentTransaction.setCustomAnimations(android.R.anim.fade_in,
-                            android.R.anim.fade_out);
+                case R.id.navigation_grid:
                     fragmentTransaction.replace(R.id.fragment, GalleryActivity.newInstance(TYPE_GRID), "Grid");
                     fragmentTransaction.commitAllowingStateLoss();
                     return true;
-                case R.id.navigation_dashboard:
-                    FragmentTransaction fragmentTransaction1 = getSupportFragmentManager().beginTransaction();
-                    fragmentTransaction1.setCustomAnimations(android.R.anim.fade_in,
-                            android.R.anim.fade_out);
-                    fragmentTransaction1.replace(R.id.fragment, GalleryActivity.newInstance(TYPE_LIST), "List");
-                    fragmentTransaction1.commitAllowingStateLoss();
+                case R.id.navigation_list:
+                    fragmentTransaction.replace(R.id.fragment, GalleryActivity.newInstance(TYPE_LIST), "List");
+                    fragmentTransaction.commitAllowingStateLoss();
                     return true;
-                case R.id.navigation_notifications:
+                case R.id.navigation_dashboard:
+                    return true;
+                case R.id.navigation_search:
+                    fragmentTransaction.replace(R.id.fragment, SearchFragment.newInstance(), "Search");
+                    fragmentTransaction.commitAllowingStateLoss();
                     return true;
             }
             return false;
@@ -65,7 +66,7 @@ public class Main2Activity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_add:
-                startActivity(new Intent(Main2Activity.this, CustomCameraActivity.class));
+                startActivity(new Intent(Main2Activity.this, CreateInvoiceActivity.class));
                 return true;
         }
         return true;

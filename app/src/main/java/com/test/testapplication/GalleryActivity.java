@@ -14,6 +14,7 @@ import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -46,7 +47,10 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
+import com.test.testapplication.Utils.DbHelper;
 import com.test.testapplication.Utils.MyGridView;
+import com.test.testapplication.adapter.CustomAdapter;
+import com.test.testapplication.model.Invoice;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -64,14 +68,15 @@ import java.util.Locale;
 import java.util.Map;
 
 import static com.test.testapplication.CustomCameraActivity.IMAGE_DIRECTORY_NAME;
+import static com.test.testapplication.Utils.CommonUtil.getDate;
 
 public class GalleryActivity extends Fragment {
     //public class GalleryActivity extends FragmentActivity {
     RecyclerView recyclerView;
     private CustomAdapter customAdapter;
     String[] supportedTypes = new String[]{"JPG", "JPEG", "PNG"};
-    ArrayList<FileItem> fileItems;
-    Map<String, ArrayList<FileItem>> fileItemsMap;
+    ArrayList<Invoice> invoiceItems;
+    Map<String, ArrayList<Invoice>> fileItemsMap;
     public static int TYPE_GRID = 1;
     public static int TYPE_LIST = 2;
     EditText et_search;
@@ -137,19 +142,20 @@ public class GalleryActivity extends Fragment {
         recyclerView = view.findViewById(R.id.recyclerView);
         TextView tv_no_captures = view.findViewById(R.id.tv_no_capture);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 2);
-        fileItems = new ArrayList<>();
-        getFiles(new File(Environment.getExternalStorageDirectory(), IMAGE_DIRECTORY_NAME).getAbsolutePath());
-        if (fileItems.size() == 0) {
+        invoiceItems = new ArrayList<>();
+//        getFiles(new File(Environment.getExternalStorageDirectory(), IMAGE_DIRECTORY_NAME).getAbsolutePath());
+        getFiles();
+        if (invoiceItems.size() == 0) {
             tv_no_captures.setVisibility(View.VISIBLE);
             recyclerView.setVisibility(View.GONE);
         } else {
-            loadIntoMap(fileItems);
+            loadIntoMap(invoiceItems);
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 //            recyclerView.setLayoutManager(gridLayoutManager);
             if (listType == TYPE_GRID)
-                recyclerView.setAdapter(new CustomAdapter(fileItemsMap, TYPE_GRID));
+                recyclerView.setAdapter(new CustomAdapter(fileItemsMap, TYPE_GRID, getActivity()));
             else {
-                customAdapter = new CustomAdapter(fileItems, TYPE_LIST);
+                customAdapter = new CustomAdapter(invoiceItems, TYPE_LIST, getActivity());
                 recyclerView.setAdapter(customAdapter);
             }
         }
@@ -166,17 +172,17 @@ public class GalleryActivity extends Fragment {
             @Override
             public boolean onLongClick(View view) {
                 Toast.makeText(getActivity(), "Long Click", Toast.LENGTH_SHORT).show();
-                recyclerView.setAdapter(new CustomAdapter(fileItemsMap, TYPE_GRID));
+                recyclerView.setAdapter(new CustomAdapter(fileItemsMap, TYPE_GRID, getActivity()));
                 return true;
             }
         });
     }
 
-    private void loadIntoMap(ArrayList<FileItem> fileItems) {
+    private void loadIntoMap(ArrayList<Invoice> invoiceItems) {
         fileItemsMap = new LinkedHashMap<>();
-        for (FileItem item : fileItems) {
-            String key = getDate(item.getFile().lastModified());
-            ArrayList<FileItem> fileItems1;
+        for (Invoice item : invoiceItems) {
+            String key = getDate(item.getInvoiceDate());
+            ArrayList<Invoice> fileItems1;
             if (fileItemsMap.containsKey(key)) {
                 fileItems1 = fileItemsMap.get(key);
             } else {
@@ -187,14 +193,6 @@ public class GalleryActivity extends Fragment {
         }
     }
 
-    private String getDate(long modified) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM yy");
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(modified);
-        String format = simpleDateFormat.format(calendar.getTime());
-        Log.e("Converted Date", format);
-        return format;
-    }
 
     boolean isStoragePermission(Context context) {
         int readPermission = ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE);
@@ -233,162 +231,42 @@ public class GalleryActivity extends Fragment {
         }
     }
 
-    class CustomAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Filterable {
-        ArrayList<FileItem> fileItems;
-        Map<String, ArrayList<FileItem>> fileItemsList;
-        int listType;
+    //    class CustomAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Filterable {
 
-        public CustomAdapter(ArrayList<FileItem> fileItems, int listType) {
-            this.fileItems = fileItems;
-            this.listType = listType;
-        }
-
-        public CustomAdapter(Map<String, ArrayList<FileItem>> fileItemsList, int listType) {
-            this.fileItemsList = fileItemsList;
-            this.listType = listType;
-        }
-
-        @Override
-        public Filter getFilter() {
-            return new SearchFilter();
-        }
-
-        public class SearchFilter extends Filter {
-
-            @Override
-            protected FilterResults performFiltering(CharSequence constraint) {
-                FilterResults filterResults = new FilterResults();
-
-                if (constraint == null || constraint.length() == 0) {
-                    // No filter implemented we return all the list
-                    filterResults.values = fileItems;
-                    filterResults.count = fileItems.size();
-                } else {
-                    List<FileItem> filteredList = new ArrayList<>();
-                    for (int i = 0; i < fileItems.size(); i++) {
-                        FileItem fileItem = fileItems.get(i);
-                        if (fileItem.getFile().getName().toUpperCase().contains(constraint.toString().toUpperCase())) {
-                            filteredList.add(fileItem);
-                        }
-                    }
-                    filterResults.values = filteredList;
-                    filterResults.count = filteredList.size();
-                }
-                return filterResults;
-            }
-
-            @SuppressWarnings("unchecked")
-            @Override
-            protected void publishResults(CharSequence constraint,
-                                          FilterResults results) {
-                fileItems = (ArrayList<FileItem>) results.values;
-                notifyDataSetChanged();
-            }
-        }
-
-
-        class ListViewHolder extends RecyclerView.ViewHolder {
-
-            private ImageView iv_thumbnail;
-            TextView tv_date, tv_name, tv_size;
-
-            public ListViewHolder(View view) {
-                super(view);
-                iv_thumbnail = view.findViewById(R.id.imageView);
-                tv_name = view.findViewById(R.id.tv_name);
-                tv_date = view.findViewById(R.id.tv_date);
-                tv_size = view.findViewById(R.id.tv_size);
-            }
-        }
-
-        class GridViewHolder extends RecyclerView.ViewHolder {
-            TextView titleView;
-            MyGridView gridView;
-
-            public GridViewHolder(View itemView) {
-                super(itemView);
-                titleView = itemView.findViewById(R.id.tv_title);
-                gridView = itemView.findViewById(R.id.grid_items);
-            }
-        }
-
-        @Override
-        public int getItemViewType(int position) {
-            return this.listType;
-        }
-
-        @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            if (viewType == TYPE_GRID) {
-                View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_grid_gallery, parent, false);
-                return new GridViewHolder(itemView);
-            } else {
-                View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_gallery, parent, false);
-                return new ListViewHolder(itemView);
-            }
-        }
-
-        @Override
-        public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
-            if (holder instanceof GridViewHolder) {
-                final GridViewHolder holder1 = (GridViewHolder) holder;
-                String key = fileItemsList.keySet().toArray()[position] + "";
-                holder1.titleView.setText(key);
-                ArrayList<FileItem> _fileItems = fileItemsList.get(key);
-                holder1.gridView.setAdapter(new CustomGridAdapter(_fileItems, getActivity()));
-            } else if (holder instanceof ListViewHolder) {
-                final ListViewHolder listViewHolder = (ListViewHolder) holder;
-                listViewHolder.tv_name.setText(fileItems.get(position).getFile().getName());
-                listViewHolder.tv_date.setText(getDate(fileItems.get(position).getFile().lastModified()));
-                listViewHolder.tv_size.setText(fileItems.get(position).getFile().length() + " Bytes");
-                Glide.with(getActivity()).
-                        load(Uri.fromFile(fileItems.get(position).getFile())).asBitmap()
-                        .placeholder(R.drawable.nodocument)
-                        .centerCrop()
-                        .into(new BitmapImageViewTarget(listViewHolder.iv_thumbnail) {
-                            @Override
-                            protected void setResource(Bitmap resource) {
-                                listViewHolder.iv_thumbnail.setImageBitmap(resource);
-                            }
-                        });
-            }
-        }
-
-        @Override
-        public int getItemCount() {
-            return this.listType == TYPE_GRID ? fileItemsMap.size() : fileItems.size();
-        }
+    private void getFiles() {
+        DbHelper dbHelper = new DbHelper(getActivity());
+        invoiceItems.addAll(dbHelper.getInvoices(null));
     }
 
-    private void getFiles(String pathname) {
-        File sd;
-        File[] files, directories;
-        if (pathname == null)
-            sd = Environment.getExternalStorageDirectory();
-        else
-            sd = new File(pathname);
-
-        files = sd.listFiles(new FileFilter() {
-            @Override
-            public boolean accept(File file) {
-//                return file.isDirectory() || Arrays.asList(supportedTypes).contains(FilenameUtils.getExtension(file.getName()).toUpperCase()) || Arrays.asList(videoFormats).contains(FilenameUtils.getExtension(file.getName()).toUpperCase()) || Arrays.asList(imageFormats).contains(FilenameUtils.getExtension(file.getName()).toUpperCase());
-                return Arrays.asList(supportedTypes).contains(FilenameUtils.getExtension(file.getName()).toUpperCase());
-            }
-        });
-        if (files != null)
-            for (int i = 0; i < files.length; i++) {
-                fileItems.add(new FileItem(files[i]));
-            }
-        directories = sd.listFiles(new FileFilter() {
-            @Override
-            public boolean accept(File file) {
-                return file.isDirectory();
-            }
-        });
-        if (directories != null)
-            for (int i = 0; i < directories.length; i++) {
-                getFiles(directories[i].getAbsolutePath());
-            }
-    }
+//    private void getFiles(String pathname) {
+//        File sd;
+//        File[] files, directories;
+//        if (pathname == null)
+//            sd = Environment.getExternalStorageDirectory();
+//        else
+//            sd = new File(pathname);
+//
+//        files = sd.listFiles(new FileFilter() {
+//            @Override
+//            public boolean accept(File file) {
+////                return file.isDirectory() || Arrays.asList(supportedTypes).contains(FilenameUtils.getExtension(file.getName()).toUpperCase()) || Arrays.asList(videoFormats).contains(FilenameUtils.getExtension(file.getName()).toUpperCase()) || Arrays.asList(imageFormats).contains(FilenameUtils.getExtension(file.getName()).toUpperCase());
+//                return Arrays.asList(supportedTypes).contains(FilenameUtils.getExtension(file.getName()).toUpperCase());
+//            }
+//        });
+//        if (files != null)
+//            for (int i = 0; i < files.length; i++) {
+//                fileItems.add(new FileItem(files[i]));
+//            }
+//        directories = sd.listFiles(new FileFilter() {
+//            @Override
+//            public boolean accept(File file) {
+//                return file.isDirectory();
+//            }
+//        });
+//        if (directories != null)
+//            for (int i = 0; i < directories.length; i++) {
+//                getFiles(directories[i].getAbsolutePath());
+//            }
+//    }
 
 }

@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -19,12 +20,15 @@ import java.io.IOException;
 
 public class PreviewActivity extends AppCompatActivity {
     ImageView iv_capture_img_preview, iv_proceed;
+    LinearLayout ll_caption;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_preview);
         iv_capture_img_preview = findViewById(R.id.iv_capture_img_preview);
+        ll_caption = findViewById(R.id.ll_caption);
+        ll_caption.setVisibility(View.GONE);
         iv_proceed = findViewById(R.id.iv_proceed);
         if (getIntent().getExtras() != null && getIntent().getStringExtra("imageUrl").length() != 0) {
             Uri imageUrl = Uri.parse(getIntent().getStringExtra("imageUrl"));

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:weightSum="10">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="7"
+            android:orientation="vertical">
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:padding="6dp">
+
+                <EditText
+                    android:id="@+id/et_amount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Invoice Amount"
+                    android:inputType="numberDecimal"
+                    android:maxLines="1"
+                    android:paddingLeft="5dp"
+                    tools:text="Hello" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:padding="6dp">
+
+                <EditText
+                    android:id="@+id/et_merchant_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Merchant Name"
+                    android:inputType="textPersonName"
+                    android:maxLines="1"
+                    android:paddingLeft="5dp"
+                    tools:text="Hello" />
+            </android.support.design.widget.TextInputLayout>
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/iv_capture"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_weight="3"
+            app:srcCompat="@drawable/ic_action_camera" />
+    </LinearLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:padding="6dp">
+
+        <EditText
+            android:id="@+id/et_invoice_no"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Invoice No"
+            android:maxLines="1"
+            android:paddingLeft="5dp"
+            tools:text="Hello" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:padding="6dp">
+
+        <EditText
+            android:id="@+id/et_invoice_gst_in"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Invoice GST IN"
+            android:maxLines="1"
+            android:paddingLeft="5dp"
+            tools:text="Hello" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:padding="6dp">
+
+        <EditText
+            android:id="@+id/et_invoice_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Invoice Date"
+            android:paddingLeft="5dp"
+            tools:text="Hello" />
+    </android.support.design.widget.TextInputLayout>
+
+    <Button
+        android:id="@+id/bt_save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@color/colorAccent"
+        android:padding="10dp"
+        android:text="Save Invoice"
+        android:textColor="@android:color/white"
+        android:textSize="18sp" />
+</LinearLayout>

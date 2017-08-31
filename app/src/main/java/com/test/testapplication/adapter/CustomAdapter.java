@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.test.testapplication.CustomGridAdapter;
 import com.test.testapplication.PreviewActivity;
@@ -143,19 +144,14 @@ public class CustomAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             listViewHolder.linearLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    context.startActivity(new Intent(context, PreviewActivity.class).putExtra("imageUrl", fileItems.get(position).getInvoiceFileLoc()));
+                    context.startActivity(new Intent(context, PreviewActivity.class).putExtra("invoiceId", fileItems.get(position).getInvoiceId()).putExtra("imageUrl", fileItems.get(position).getInvoiceFileLoc()));
                 }
             });
-            Glide.with(context).
-                    load(fileItems.get(position).getInvoiceFileLoc()).asBitmap()
-                    .placeholder(R.drawable.nodocument)
-                    .centerCrop()
-                    .into(new BitmapImageViewTarget(listViewHolder.iv_thumbnail) {
-                        @Override
-                        protected void setResource(Bitmap resource) {
-                            listViewHolder.iv_thumbnail.setImageBitmap(resource);
-                        }
-                    });
+            Glide.with(context).load(fileItems.get(position).getInvoiceFileLoc())
+                    .thumbnail(0.5f)
+                    .crossFade()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(listViewHolder.iv_thumbnail);
         }
     }
 

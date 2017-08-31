@@ -18,6 +18,7 @@ import android.widget.TextView;
 //import com.larvalabs.svgandroid.SVGParser;
 import com.test.testapplication.CreateInvoiceActivity;
 import com.test.testapplication.CustomCameraActivity;
+import com.test.testapplication.DashboardFragment;
 import com.test.testapplication.GalleryActivity;
 import com.test.testapplication.GalleryFragment;
 import com.test.testapplication.R;
@@ -45,6 +46,8 @@ public class Main2Activity extends AppCompatActivity {
                     fragmentTransaction.commitAllowingStateLoss();
                     return true;
                 case R.id.navigation_dashboard:
+                    fragmentTransaction.replace(R.id.fragment, DashboardFragment.newInstance(), "Dashboard");
+                    fragmentTransaction.commitAllowingStateLoss();
                     return true;
                 case R.id.navigation_search:
                     fragmentTransaction.replace(R.id.fragment, SearchFragment.newInstance(), "Search");
@@ -66,6 +69,7 @@ public class Main2Activity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_add:
+                this.finish();
                 startActivity(new Intent(Main2Activity.this, CreateInvoiceActivity.class));
                 return true;
         }

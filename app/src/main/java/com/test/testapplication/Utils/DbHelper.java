@@ -114,5 +114,29 @@ public class DbHelper extends SQLiteOpenHelper {
         return invoices;
     }
 
+    public Invoice getInvoiceBasedId(int invoiceId) {
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor cursor = db.rawQuery("select * from " + INVOICES_TB + " where ID=?", new String[]{String.valueOf(invoiceId)});
+        while (cursor.moveToNext()) {
+            return (new Invoice(cursor.getString(cursor.getColumnIndex("INVOICEAMOUNT")), cursor.getString(cursor.getColumnIndex("INVOICENO")), cursor.getString(cursor.getColumnIndex("INVOICEGSTIN"))
+                    , cursor.getString(cursor.getColumnIndex("INVOICEDATE")), cursor.getString(cursor.getColumnIndex("MERCHANTNAME")), cursor.getString(cursor.getColumnIndex("INVOICELOC")))
+                    .setInvoiceId(cursor.getInt(cursor.getColumnIndex("ID"))).setInvoiceStatus(cursor.getString(cursor.getColumnIndex("STATUS"))).setUpdatedTime(cursor.getString(cursor.getColumnIndex("UPDATEDTIME"))));
+        }
+        return null;
+    }
+
+    public ArrayList<Invoice> getInvoicesBasedStatus(String searchStr) {
+        SQLiteDatabase db = getWritableDatabase();
+//        Cursor cursor = db.rawQuery("select i.* from " + INVOICES_TB + "i INNER JOIN " + INVOICE_TRANS_TB + "it  ON i.ID=it.INVOICEID", null);
+        String appendQuery = (searchStr == null || searchStr.trim().length() == 0 ? "" : " where MERCHANTNAME like '%" + searchStr + "%'");
+        Cursor cursor = db.rawQuery("select * from " + INVOICES_TB + appendQuery, null);
+        ArrayList<Invoice> invoices = new ArrayList<>();
+        while (cursor.moveToNext()) {
+            invoices.add(new Invoice(cursor.getString(cursor.getColumnIndex("INVOICEAMOUNT")), cursor.getString(cursor.getColumnIndex("INVOICENO")), cursor.getString(cursor.getColumnIndex("INVOICEGSTIN"))
+                    , cursor.getString(cursor.getColumnIndex("INVOICEDATE")), cursor.getString(cursor.getColumnIndex("MERCHANTNAME")), cursor.getString(cursor.getColumnIndex("INVOICELOC")))
+                    .setInvoiceId(cursor.getInt(cursor.getColumnIndex("ID"))).setInvoiceStatus(cursor.getString(cursor.getColumnIndex("STATUS"))).setUpdatedTime(cursor.getString(cursor.getColumnIndex("UPDATEDTIME"))));
+        }
+        return invoices;
+    }
 
 }

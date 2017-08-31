@@ -446,4 +446,11 @@ public class CreateInvoiceActivity extends AppCompatActivity implements OnImageR
     public void deleteProfile() {
 
     }
+
+    @Override
+    public void onBackPressed() {
+//        super.onBackPressed();
+        this.finish();
+        startActivity(new Intent(CreateInvoiceActivity.this, Main2Activity.class));
+    }
 }

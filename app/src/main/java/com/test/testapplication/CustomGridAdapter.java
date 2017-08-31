@@ -63,7 +63,7 @@ public class CustomGridAdapter extends BaseAdapter {
         holder2.imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                context.startActivity(new Intent(context, PreviewActivity.class).putExtra("imageUrl", fileItems.get(i).getInvoiceFileLoc()));
+                context.startActivity(new Intent(context, PreviewActivity.class).putExtra("invoiceId", fileItems.get(i).getInvoiceId()).putExtra("imageUrl", fileItems.get(i).getInvoiceFileLoc()));
 
             }
         });

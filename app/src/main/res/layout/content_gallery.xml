@@ -14,11 +14,6 @@
         android:hint="Search"
         android:visibility="gone" />
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:src="@drawable/bar_graph"
-        android:visibility="gone" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView"

@@ -19,6 +19,7 @@ import android.widget.TextView;
 import com.test.testapplication.Utils.DbHelper;
 import com.test.testapplication.adapter.CustomAdapter;
 import com.test.testapplication.model.Invoice;
+import com.test.testapplication.model.Status;
 
 import java.util.ArrayList;
 
@@ -81,7 +82,7 @@ public class SearchFragment extends Fragment {
     private void searchInvoices(String searchStr) {
         invoiceItems.clear();
         DbHelper dbHelper = new DbHelper(getActivity());
-        invoiceItems.addAll(dbHelper.getInvoices(searchStr));
+        invoiceItems.addAll(dbHelper.getInvoices(searchStr, Status.ALL.toString()));
         displayProgress(false);
         if (invoiceItems.size() == 0) {
             tv_no_capture.setText("No Records found");

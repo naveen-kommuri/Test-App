@@ -18,6 +18,39 @@
         android:background="?android:attr/windowBackground"
         app:menu="@menu/navigation" />
 
+    <android.support.design.widget.TabLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:tabGravity="fill"
+        app:tabMode="scrollable" />
+
+    <!--<android.support.design.widget.TabItem-->
+    <!--android:id="@+id/ti_all"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:text="All" />-->
+
+    <!--<android.support.design.widget.TabItem-->
+    <!--android:id="@+id/ti_in_process"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:text="In Process" />-->
+
+    <!--<android.support.design.widget.TabItem-->
+    <!--android:id="@+id/ti_rejected"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:text="Rejected" />-->
+
+    <!--<android.support.design.widget.TabItem-->
+    <!--android:id="@+id/ti_processed"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:text="Processed" />-->
+    <!--</android.support.design.widget.TabLayout>-->
+
     <FrameLayout
         android:id="@+id/fragment"
         android:layout_width="match_parent"

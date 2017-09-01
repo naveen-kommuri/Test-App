@@ -5,12 +5,15 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.test.testapplication.model.Invoice;
 import com.test.testapplication.model.Status;
 import com.test.testapplication.model.User;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Created by Naveen on 8/19/2017.
@@ -100,11 +103,14 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
 
-    public ArrayList<Invoice> getInvoices(String searchStr) {
+    public ArrayList<Invoice> getInvoices(String searchStr, String status) {
         SQLiteDatabase db = getWritableDatabase();
 //        Cursor cursor = db.rawQuery("select i.* from " + INVOICES_TB + "i INNER JOIN " + INVOICE_TRANS_TB + "it  ON i.ID=it.INVOICEID", null);
         String appendQuery = (searchStr == null || searchStr.trim().length() == 0 ? "" : " where MERCHANTNAME like '%" + searchStr + "%'");
-        Cursor cursor = db.rawQuery("select * from " + INVOICES_TB + appendQuery, null);
+        String statusQuery = (status == null || status.trim().length() == 0 || status.equals(Status.ALL.toString()) ? "" : " where status = '" + status + "'");
+        String query = "select * from " + INVOICES_TB + appendQuery + statusQuery;
+        Log.e("Query", query);
+        Cursor cursor = db.rawQuery(query, null);
         ArrayList<Invoice> invoices = new ArrayList<>();
         while (cursor.moveToNext()) {
             invoices.add(new Invoice(cursor.getString(cursor.getColumnIndex("INVOICEAMOUNT")), cursor.getString(cursor.getColumnIndex("INVOICENO")), cursor.getString(cursor.getColumnIndex("INVOICEGSTIN"))
@@ -139,4 +145,24 @@ public class DbHelper extends SQLiteOpenHelper {
         return invoices;
     }
 
+    public Map<String, Integer> getInvoicesReportBasedOnMonth(String yearAndMonth) {
+        SQLiteDatabase db = getWritableDatabase();
+//        select invoiceDate,count(invoiceDate) from Invoices where invoiceDate like '2017-08-%' group by invoiceDate
+        Cursor cursor = db.rawQuery("select invoiceDate,count(invoiceDate) as count from Invoices where invoiceDate like '?-%' group by invoiceDate", new String[]{yearAndMonth});
+        Map<String, Integer> report = new LinkedHashMap<>();
+        while (cursor.moveToNext()) {
+            report.put(cursor.getString(cursor.getColumnIndex("INVOICEDATE")), cursor.getInt(cursor.getColumnIndex("count")));
+        }
+        return report;
+    }
+
+    public Map<String, Integer> getInvoicesBasedStatusesCount() {
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor cursor = db.rawQuery("select status,count(status)as count from Invoices group by status", new String[]{});
+        Map<String, Integer> report = new LinkedHashMap<>();
+        while (cursor.moveToNext()) {
+            report.put(cursor.getString(cursor.getColumnIndex("STATUS")), Integer.parseInt(cursor.getString(cursor.getColumnIndex("count"))));
+        }
+        return report;
+    }
 }

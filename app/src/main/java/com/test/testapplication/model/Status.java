@@ -5,5 +5,5 @@ package com.test.testapplication.model;
  */
 
 public enum Status {
-    REGISTERED, PROCESSED, REJECTED;
+    ALL, REGISTERED, REJECTED, PROCESSED;
 }

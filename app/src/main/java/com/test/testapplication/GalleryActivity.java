@@ -82,15 +82,17 @@ public class GalleryActivity extends Fragment {
     EditText et_search;
     int listType;
     View view;
+    String status;
 
     public GalleryActivity() {
 
     }
 
-    public static GalleryActivity newInstance(int listType) {
+    public static GalleryActivity newInstance(int listType, String status) {
         GalleryActivity fragment = new GalleryActivity();
         Bundle args = new Bundle();
         args.putInt("listType", listType);
+        args.putString("status", status);
         fragment.setArguments(args);
         return fragment;
     }
@@ -104,6 +106,7 @@ public class GalleryActivity extends Fragment {
         view = inflater.inflate(R.layout.activity_gallery, container, false);
         if (getArguments() != null) {
             listType = getArguments().getInt("listType");
+            status = getArguments().getString("status");
         }
         et_search = view.findViewById(R.id.et_search);
 //        et_search.addTextChangedListener(new TextWatcher() {
@@ -144,7 +147,7 @@ public class GalleryActivity extends Fragment {
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 2);
         invoiceItems = new ArrayList<>();
 //        getFiles(new File(Environment.getExternalStorageDirectory(), IMAGE_DIRECTORY_NAME).getAbsolutePath());
-        getFiles();
+        getFiles(status);
         if (invoiceItems.size() == 0) {
             tv_no_captures.setVisibility(View.VISIBLE);
             recyclerView.setVisibility(View.GONE);
@@ -233,9 +236,9 @@ public class GalleryActivity extends Fragment {
 
     //    class CustomAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Filterable {
 
-    private void getFiles() {
+    private void getFiles(String status) {
         DbHelper dbHelper = new DbHelper(getActivity());
-        invoiceItems.addAll(dbHelper.getInvoices(null));
+        invoiceItems.addAll(dbHelper.getInvoices(null, status));
     }
 
 //    private void getFiles(String pathname) {

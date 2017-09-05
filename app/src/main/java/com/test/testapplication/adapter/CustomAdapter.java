@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import static com.test.testapplication.GalleryActivity.TYPE_GRID;
+import static com.test.testapplication.Utils.CommonUtil.displayString;
 import static com.test.testapplication.Utils.CommonUtil.getDate;
 
 public class CustomAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -137,7 +138,7 @@ public class CustomAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             holder1.gridView.setAdapter(new CustomGridAdapter(_fileItems, context));
         } else if (holder instanceof ListViewHolder) {
             final ListViewHolder listViewHolder = (ListViewHolder) holder;
-            listViewHolder.tv_name.setText(fileItems.get(position).getMerchantName());
+            listViewHolder.tv_name.setText(displayString(fileItems.get(position).getMerchantName()));
             listViewHolder.tv_date.setText(getDate(fileItems.get(position).getInvoiceDate()));
             listViewHolder.tv_amount.setText(fileItems.get(position).getInvoiceAmount());
             listViewHolder.tv_invoice_no.setText(fileItems.get(position).getInvoiceNo());

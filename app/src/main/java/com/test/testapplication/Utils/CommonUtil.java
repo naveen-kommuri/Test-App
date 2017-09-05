@@ -50,4 +50,10 @@ public class CommonUtil {
         }
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
+
+    public static String displayString(String string) {
+        if (string != null && string.length() != 0)
+            return string.substring(0, 1).toUpperCase() + string.substring(1).toLowerCase();
+        return string;
+    }
 }

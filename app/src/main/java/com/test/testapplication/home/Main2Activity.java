@@ -102,6 +102,7 @@ public class Main2Activity extends AppCompatActivity {
         setContentView(R.layout.activity_main2);
         tabLayout = findViewById(R.id.tabLayout);
         navigation = findViewById(R.id.navigation);
+
         fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
@@ -114,12 +115,12 @@ public class Main2Activity extends AppCompatActivity {
         DbHelper dbHelper = new DbHelper(Main2Activity.this);
         Map<String, Integer> invoicesBasedStatusesCount = dbHelper.getInvoicesBasedStatusesCount();
         int allStautsesCount = 0;
-        for (int i = 1; i < statuses.length; i++) {
-            int statusCount = invoicesBasedStatusesCount.containsKey(statuses[i].toString()) ? invoicesBasedStatusesCount.get(statuses[i].toString()) : 0;
-            allStautsesCount += statusCount;
-            tabLayout.addTab(tabLayout.newTab().setText(statuses[i].toString() + "(" + statusCount + ")"));
+        for (int i = 0; i < statuses.length; i++) {
+//            int statusCount = invoicesBasedStatusesCount.containsKey(statuses[i].toString()) ? invoicesBasedStatusesCount.get(statuses[i].toString()) : 0;
+//            allStautsesCount += statusCount;
+            tabLayout.addTab(tabLayout.newTab().setText(statuses[i].toString()));
         }
-        tabLayout.addTab(tabLayout.newTab().setText(statuses[0].toString() + "(" + allStautsesCount + ")"), 0);
+//        tabLayout.addTab(tabLayout.newTab().setText(statuses[0].toString() + "(" + allStautsesCount + ")"), 0);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {

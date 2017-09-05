@@ -26,6 +26,7 @@
         android:layout_height="wrap_content"
         android:columnWidth="90dp"
         android:numColumns="4"
+        android:padding="10dp"
         android:stretchMode="spacingWidthUniform"
         android:verticalSpacing="5dp" />
 </LinearLayout>

@@ -33,7 +33,7 @@ public class TestActivity extends AppCompatActivity {
         mChart.getDescription().setEnabled(false);
 
         // enable touch gestures
-        mChart.setTouchEnabled(true);
+        mChart.setTouchEnabled(false);
 
         // enable scaling and dragging
         mChart.setDragEnabled(true);
@@ -59,7 +59,7 @@ public class TestActivity extends AppCompatActivity {
         mChart.getAxisRight().setEnabled(false);
 
         // add data
-        setData(45, 100);
+        setData(10, 100);
 
         mChart.getLegend().setEnabled(false);
 

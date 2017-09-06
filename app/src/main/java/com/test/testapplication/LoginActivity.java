@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -186,9 +187,9 @@ public class LoginActivity extends AppCompatActivity {
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return "Sign In";
+                    return Html.fromHtml("<html><body><p><font color='#6665ff'>Sign In</font></p></body></html>");
                 case 1:
-                    return "Sign Up";
+                    return Html.fromHtml("<html><body><p><font color='#6665ff'>Sign Up</font></p></body></html>");
             }
             return null;
         }

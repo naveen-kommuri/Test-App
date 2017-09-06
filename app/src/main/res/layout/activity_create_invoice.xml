@@ -21,30 +21,41 @@
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:padding="6dp">
+                android:layout_marginBottom="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="5dp"
+                android:paddingBottom="6dp"
+                android:paddingRight="6dp"
+                android:paddingTop="6dp">
 
                 <EditText
                     android:id="@+id/et_amount"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:fontFamily="@font/sf_ui_text_bold"
                     android:hint="Invoice Amount"
                     android:inputType="numberDecimal"
                     android:maxLines="1"
                     android:paddingLeft="5dp"
+                    android:textColor="@color/colorPrimary"
                     tools:text="Hello" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:padding="6dp">
+                android:layout_marginBottom="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="5dp"
+                android:paddingBottom="6dp"
+                android:paddingRight="6dp"
+                android:paddingTop="6dp">
 
                 <EditText
                     android:id="@+id/et_merchant_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:fontFamily="@font/sf_ui_text_bold"
                     android:hint="Merchant Name"
                     android:inputType="textPersonName"
                     android:maxLines="1"
@@ -58,8 +69,11 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_gravity="center"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="20dp"
             android:layout_weight="3"
-            app:srcCompat="@drawable/ic_action_camera" />
+            android:background="@drawable/camera_corner"
+            app:srcCompat="@drawable/ic_camera" />
     </LinearLayout>
 
     <android.support.design.widget.TextInputLayout
@@ -114,9 +128,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:background="@color/colorAccent"
-        android:padding="10dp"
+        android:background="@drawable/bt_corner"
+        android:paddingBottom="10dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:paddingTop="10dp"
         android:text="Save Invoice"
+        android:textAllCaps="false"
         android:textColor="@android:color/white"
         android:textSize="18sp" />
 </LinearLayout>

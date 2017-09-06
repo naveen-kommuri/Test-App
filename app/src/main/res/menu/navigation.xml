@@ -6,7 +6,6 @@
         android:id="@+id/navigation_dashboard"
         android:icon="@drawable/ic_dashboard"
         android:title="Dashboard"
-        app:itemBackground="@drawable/nav_view_item_background"
         app:showAsAction="never" />
 
     <item

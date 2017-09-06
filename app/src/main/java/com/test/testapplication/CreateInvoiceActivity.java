@@ -23,6 +23,9 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -275,6 +278,15 @@ public class CreateInvoiceActivity extends AppCompatActivity implements OnImageR
                     break;
             }
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.home, menu);
+        MenuItem item = menu.getItem(0);
+        item.setIcon(R.drawable.ic_camera_green);
+        return true;
     }
 
     @Override

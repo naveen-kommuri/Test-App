@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="colorActionBar">#6665ff</color>
+    <color name="colorActionBarDark">#6665ff</color>
+    <!--<color name="colorActionBarDark">#6665ff</color>-->
     <color name="colorPrimary">#08d1a7</color>
     <color name="colorPrimaryDark">#08d1a7</color>
     <color name="colorGraphGreen">#e1fcf1</color>

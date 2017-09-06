@@ -6,35 +6,9 @@
     android:layout_height="match_parent"
     tools:context="com.test.testapplication.TestActivity">
 
-    <android.support.design.widget.TabLayout
-        android:id="@+id/tabLayout"
-        android:layout_width="match_parent"
+    <Button
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:tabGravity="fill"
-        app:tabMode="fixed">
-
-        <android.support.design.widget.TabItem
-            android:id="@+id/ti_all"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="All" />
-
-        <android.support.design.widget.TabItem
-            android:id="@+id/ti_in_process"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="In Process" />
-
-        <android.support.design.widget.TabItem
-            android:id="@+id/ti_rejected"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Rejected" />
-
-        <android.support.design.widget.TabItem
-            android:id="@+id/ti_processed"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Processed" />
-    </android.support.design.widget.TabLayout>
+        android:gravity="center_vertical"
+        android:text="Comp" />
 </android.support.constraint.ConstraintLayout>

@@ -1,5 +1,8 @@
 package com.test.testapplication;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
 import android.content.Intent;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -82,6 +85,7 @@ public class LoginActivity extends AppCompatActivity {
             final EditText et_email = (EditText) rootView.findViewById(R.id.et_email);
             final EditText et_password = (EditText) rootView.findViewById(R.id.et_password);
             Button bt_signin = (Button) rootView.findViewById(R.id.bt_signin);
+
             bt_signin.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

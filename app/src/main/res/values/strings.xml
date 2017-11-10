@@ -6,4 +6,5 @@
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
     <string name="title_activity_custom3">CustomActivity3</string>
+    <string name="title_activity_test_db_activtiy">TestDbActivtiy</string>
 </resources>

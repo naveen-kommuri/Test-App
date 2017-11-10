@@ -2,10 +2,16 @@ package com.test.testapplication;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
+import android.app.ActivityOptions;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.support.constraint.ConstraintLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -26,6 +32,9 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IFillFormatter;
 import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.test.testapplication.testdb.LifeCycleActivtiy;
+
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
@@ -39,7 +48,11 @@ public class TestActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        setContentView(R.layout.activity_test);
+        Paint paint = new Paint();
+        paint.setStyle(Paint.Style.FILL);
         final LinearLayout mainLayout = (LinearLayout) this.getLayoutInflater().inflate(R.layout.activity_test, null);
+        BitmapDrawable drawable = (BitmapDrawable) imageView.getDrawable();
+        Bitmap bitmap = drawable.getBitmap();
 
         // set a global layout listener which will be called when the layout pass is completed and the view is drawn
         mainLayout.getViewTreeObserver().addOnGlobalLayoutListener(
@@ -77,9 +90,8 @@ public class TestActivity extends AppCompatActivity {
         this.maxY = maxY;
     }
 
-
+    @Nullable
     public void animate(View view) {
-
 
     }
 

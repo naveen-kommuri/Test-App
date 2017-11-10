@@ -40,13 +40,17 @@ class CustomAnotherTest : AppCompatActivity() {
                 button.text = "Pause"
             }
         }
-        image.setOnTouchListener(object : OnSwipeTouchListener(this@CustomAnotherTest) {
-            override fun swipeState(direction: Int) {
-                super.swipeState(direction)
-                image.direction = direction
-            }
-
-        })
+        image.setOnClickListener() { view ->
+            animateImg()
+            Log.e("Clocl", "Js[[r")
+        }
+//        image.setOnTouchListener(object : OnSwipeTouchListener(this@CustomAnotherTest) {
+//            override fun swipeState(direction: Int) {
+//                super.swipeState(direction)
+//                image.direction = direction
+//            }
+//
+//        })
 
     }
 
